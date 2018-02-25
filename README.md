@@ -20,7 +20,7 @@ Reference:
 
 Mask-RCNN的PyTorch实现
 
-(本项目在持续更新中,目前还不能使用)
+(本项目在持续更新中,目前不能使用)
 
 参考:
 1. [Kaiming He et al. Mask R-CNN](https://arxiv.org/abs/1703.06870)
