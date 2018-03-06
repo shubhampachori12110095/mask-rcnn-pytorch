@@ -13,7 +13,7 @@ import torch.nn as nn
 class MaskRCNN(nn.Module):
     def __init__(self):
         self.fpn = ResNet_101_FPN()
-        self.rpn = RPN()
+        self.rpn = RPN(dim=512)
         self.roi_align = RoIAlign()
         self.box_head = BoxHead()
         self.cls_head = ClsHead()
