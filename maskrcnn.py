@@ -1,7 +1,7 @@
 from backbone.resnet_101_fpn import ResNet_101_FPN
 from proposal.rpn import RPN
 from head.box import BoxHead
-from head.cls import ClsHead
+from head.cls_bbox import ClsHead
 from head.mask import MaskHead
 from lib.nms.pth_nms import pth_nms as nms
 from lib.roi_align.roi_align import RoIAlign
