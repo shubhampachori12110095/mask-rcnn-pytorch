@@ -6,6 +6,38 @@
 
 Mask R-CNN implementation in PyTorch
 
+## usage
+(need update)
+
+```python
+from maskrcnn import MaskRCNN
+
+mask_rcnn = MaskRCNN(num_classes=1000)
+
+def train():
+    pass
+def predict():
+    pass
+```
+
+## source directory
+
+#### backbone: 
+
+Several backbones model support Mask R-CNN, like ResNet-101-FPN.
+
+#### proposal:
+
+RoI(Regions of interest) Proposal, like RPN and variants.
+
+#### pool:
+
+Pooling for fixed dimensional representation, like RoIAlign and some variants.
+
+#### lib:
+
+Some third party code this project based on.
+
 
 Reference:
 1. [Kaiming He et al. Mask R-CNN](https://arxiv.org/abs/1703.06870)
