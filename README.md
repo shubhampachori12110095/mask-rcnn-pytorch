@@ -2,9 +2,10 @@
 
 ## English:
 
+##(Currently, this project is in continuous update state, will be available soon.)
+
 Mask R-CNN implementation in PyTorch
 
-(Currently, this project is in continuous update state, not available yet)
 
 Reference:
 1. [Kaiming He et al. Mask R-CNN](https://arxiv.org/abs/1703.06870)
@@ -18,9 +19,9 @@ Reference:
 
 ## 中文：
 
-Mask R-CNN的PyTorch实现
+##(本项目在持续更新中, 很快将可以使用。)
 
-(本项目在持续更新中, 目前不能使用)
+Mask R-CNN的PyTorch实现
 
 参考:
 1. [Kaiming He et al. Mask R-CNN](https://arxiv.org/abs/1703.06870)

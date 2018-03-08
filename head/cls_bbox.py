@@ -27,6 +27,7 @@ class ClsBBoxHead_fc(nn.Module):
 
         return prob_cls, prob_bbox
 
+
 class ClsBBoxHead_fcn(nn.Module):
     def __init__(self, depth, pool_size, num_classes):
         super(ClsBBoxHead_fcn, self).__init__()
@@ -49,8 +50,7 @@ class ClsBBoxHead_fcn(nn.Module):
 
         x = x.view(-1, 1024)
         fc_out_cls = self.fc_cls(x)
-        fc_out_bbox = self.fc_bbox(x)
         prob_cls = self.softmax(fc_out_cls)
-        prob_bbox = self.softmax(fc_out_bbox)
+        reg_bbox = self.fc_bbox(x)
 
-        return prob_cls, prob_bbox
+        return prob_cls, reg_bbox
