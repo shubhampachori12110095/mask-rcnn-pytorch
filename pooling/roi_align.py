@@ -9,7 +9,7 @@ class RoiAlign(nn.Module):
     def __init__(self, grid_size):
         """
         Args:
-            grid_size(tuple): grid pool size apply to roi, e.g., (14, 14).  
+            grid_size(tuple): grid pooling size apply to roi, e.g., (14, 14).  
         """
         super(RoiAlign, self).__init__()
         assert isinstance(grid_size, tuple)

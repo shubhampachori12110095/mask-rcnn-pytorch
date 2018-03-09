@@ -45,7 +45,7 @@ __C.TRAIN.TRUNCATED = False
 # Whether to have weight decay on bias as well
 __C.TRAIN.BIAS_DECAY = False
 
-# Whether to add ground truth boxes to the pool when sampling regions
+# Whether to add ground truth boxes to the pooling when sampling regions
 __C.TRAIN.USE_GT = False
 
 # Whether to use aspect-ratio grouping of training images, introduced merely for saving

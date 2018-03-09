@@ -1,4 +1,5 @@
 import torch.nn as nn
+import torch.nn.functional as F
 from lib.model.fpn import FPN101
 
 
@@ -19,4 +20,7 @@ class ResNet_101_FPN(nn.Module):
             p4:
             p5:
         """
-        return self.fpn(x)
+        p2, p3, p4, p5 = self.fpn(x)
+        # Detectron style, use max pooling to simulate stride 2 subsampling
+        p6 = F.max_pool2d(p5, kernel_size=1, stride=2)
+        return p2, p3, p4, p5, p6
