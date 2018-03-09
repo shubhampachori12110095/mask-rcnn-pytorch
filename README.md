@@ -4,7 +4,7 @@
 
 Mask R-CNN implementation in PyTorch
 
-![maskrcnn-result](http://chuantu.biz/t6/250/1520606201x-1404795469.png)
+![maskrcnn-result](http://chuantu.biz/t6/250/1520606201x-1404795469.png=600x)
 
 ## Usage
 (will be available very soon.)
