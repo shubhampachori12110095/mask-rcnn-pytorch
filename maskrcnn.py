@@ -46,9 +46,9 @@ class MaskRCNN(nn.Module):
         prob_cls, reg_bbox = self.cls_box_head(roi_pools)
         prob_mask = self.mask_head(roi_pools)
         # reshape back to NxMx(num_classes)
-        prob_cls = prob_cls.view(x.size()[0], -1, self.num_classes)
-        reg_bbox = reg_bbox.view(x.size()[0], -1, self.num_classes)
-        prob_mask = prob_mask.view(x.size()[0], -1, self.num_classes)
+        prob_cls = prob_cls.view(x.size(0), -1, self.num_classes)
+        reg_bbox = reg_bbox.view(x.size(0), -1, self.num_classes)
+        prob_mask = prob_mask.view(x.size(0), -1, self.num_classes)
         return prob_cls, reg_bbox, prob_mask
 
     def _roi_align_fpn(self, fpn_features, rois, img_width, img_height):
@@ -57,17 +57,17 @@ class MaskRCNN(nn.Module):
          
         Args:
             fpn_features: [p2, p3, p4, p5]
-            rois: NxMx4(x1, y1, x2, y2), RPN proposals.
+            rois: NxMx5(n ,x1, y1, x2, y2), RPN proposals.
             img_width: Input image width.
             img_height: Input image height.
 
         Returns:
             roi_pools: RoI after use RoIAlign.
         """
-        # # flatten NxMx5 to (NxM)x5
-        # rois_reshape = rois.view(-1, rois.size()[-1])
-        bboxes = rois[:, 1:]
-        bbox_indexes = rois[:, 0]
+        # flatten NxMx4 to (NxM)x4
+        rois_reshape = rois.view(-1, rois.size(-1))
+        bboxes = rois_reshape[:, 1:]
+        bbox_indexes = rois_reshape[:, 0]
         roi_pools = []
         for idx, bbox in enumerate(bboxes):
             # In feature pyramid network paper, alpha is 224 and image short side 800 pixels,

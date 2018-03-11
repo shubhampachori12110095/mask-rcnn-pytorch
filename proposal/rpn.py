@@ -39,8 +39,8 @@ class RPN(nn.Module):
             gt_boxes: 
             num_boxes: 
         Returns:
-             rois: NxMx4(x1, y1, x2, y2)
-                N: batch size, M: number of roi after nms.
+             rois: NxMx5(idx, x1, y1, x2, y2)
+                N: batch size, M: number of roi after nms, idx: bbox index in mini-batch.
              rpn_loss_cls: Classification loss
              rpn_loss_bbox: Bounding box regression loss
         """
@@ -59,11 +59,13 @@ class RPN(nn.Module):
             roi_score = roi_single[:, :, 1]
             roi_bbox = roi_single[:, :, 2:]
             rois_pre_nms.append(torch.cat((roi_bbox, roi_score), 1))
+        # NxMx5. torch.cat() at axis M.
         rois_pre_nms = torch.cat(rois_pre_nms, 1)
-        rois = torch.zeros(batch_size, nms_output_num, 4)
+        rois = torch.zeros(batch_size, nms_output_num, 5)
         for i in range(batch_size):
             keep_idx = nms(rois_pre_nms[i], cfg.RPN_NMS_THRESH)
             keep_idx = keep_idx[:nms_output_num]
             rois_single = torch.cat([rois_pre_nms[i][idx] for idx in keep_idx])
-            rois[i, :, :] = rois_single[:, :4]   # remove roi_score
+            rois[i, :, 0] = i
+            rois[i, :, 1:] = rois_single[:, :4]   # remove roi_score
         return rois, rpn_loss_cls, rpn_loss_bbox
