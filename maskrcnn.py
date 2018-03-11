@@ -9,7 +9,16 @@ import torch.nn as nn
 
 
 class MaskRCNN(nn.Module):
+    """Mask R-CNN
+    
+    References: https://arxiv.org/pdf/1703.06870.pdf
+    
+    Notes: In comments below, we assume N: batch size, M: number of roi,
+        C: feature map channel, H: image height, W: image width
+    """
+
     def __init__(self, num_classes):
+        super(MaskRCNN, self).__init__()
         self.num_classes = num_classes
         self.fpn = ResNet_101_FPN()
         self.rpn = RPN(dim=512)
@@ -28,17 +37,11 @@ class MaskRCNN(nn.Module):
             prob_cls:  NxMx2(num_classes), probability of mask.
         """
         p2, p3, p4, p5, p6 = self.fpn(x)
-        fpn_features_rpn = [p2, p3, p4, p5, p6]
+        rpn_features_rpn = [p2, p3, p4, p5, p6]
         fpn_features = [p2, p3, p4, p5]
-
-        for feature in fpn_features_rpn:
-            rois, rpn_loss_cls, rpn_loss_bbox = self.rpn(feature)
-        # flatten NxMx5 to (NxM)x5
-        rois_reshape = rois.view(-1, rois.size()[-1])
-        bboxes = rois_reshape[:, 1:]
-        bbox_indexes = rois_reshape[:, 0]
-        roi_pools = self._roi_align_fpn(fpn_features_rpn, bboxes, bbox_indexes,
-                                        img_height=x.size()[2], img_width=x.size()[3])
+        rois, rpn_loss_cls, rpn_loss_bbox = self.rpn(rpn_features_rpn)
+        roi_pools = self._roi_align_fpn(fpn_features, rois, img_height=x.size(2),
+                                        img_width=x.size(3))
         roi_pools = torch.cat(roi_pools, 0)
         prob_cls, reg_bbox = self.cls_box_head(roi_pools)
         prob_mask = self.mask_head(roi_pools)
@@ -48,31 +51,35 @@ class MaskRCNN(nn.Module):
         prob_mask = prob_mask.view(x.size()[0], -1, self.num_classes)
         return prob_cls, reg_bbox, prob_mask
 
-    def _roi_align_fpn(self, fpn_features, bboxes, bbox_indexes, img_width, img_height):
+    def _roi_align_fpn(self, fpn_features, rois, img_width, img_height):
         """When use fpn backbone, set RoiAlign use different levels of fpn feature pyramid
          according to RoI size.
          
         Args:
             fpn_features: [p2, p3, p4, p5]
-            bboxes: Bounding boxes.
-            bbox_indexes: Indexes of bounding box in mini-batch.
+            rois: NxMx4(x1, y1, x2, y2), RPN proposals.
             img_width: Input image width.
             img_height: Input image height.
 
         Returns:
             roi_pools: RoI after use RoIAlign.
         """
+        # # flatten NxMx5 to (NxM)x5
+        # rois_reshape = rois.view(-1, rois.size()[-1])
+        bboxes = rois[:, 1:]
+        bbox_indexes = rois[:, 0]
         roi_pools = []
         for idx, bbox in enumerate(bboxes):
-            # set alpha parameterized by image short side size, for
-            # consideration of small image input.
+            # In feature pyramid network paper, alpha is 224 and image short side 800 pixels,
+            # for using of small image input, like maybe short side 256, here alpha is
+            # parameterized by image short side size.
             alpha = 224 // 800 * (img_width if img_width <= img_height else img_height)
             bbox_width = torch.abs(bbox[0] - bbox[2])
             bbox_height = torch.abs(bbox[1] - bbox[3])
             log2 = torch.log(torch.sqrt(bbox_height * bbox_width)) / torch.log(2) / alpha
             level = torch.floor(4 + log2) - 2  # minus 2 make level 0 indexed
-            # rois small enough may make level below zero，set these rois to use p2 feature
-            level = level if level >= 0 else 0
+            # Rois small or big enough may get level below 0 or above 3.
+            level = torch.clamp(level, 0, 3)
             bbox = torch.unsqueeze(bbox, 0)
             roi_pool_per_box = self.roi_align(fpn_features[level], bbox, bbox_indexes[idx])
             roi_pools.append(roi_pool_per_box)

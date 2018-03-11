@@ -125,7 +125,7 @@ class _ProposalLayer(nn.Module):
         proposals_keep = proposals
         _, order = torch.sort(scores_keep, 1, True)
 
-        output = scores.new(batch_size, post_nms_topN, 5).zero_()
+        output = scores.new(batch_size, post_nms_topN, 6).zero_()
         for i in range(batch_size):
             # # 3. remove predicted boxes with either height or width < threshold
             # # (NOTE: convert min_size to input image scale stored in im_info[2])
@@ -157,7 +157,8 @@ class _ProposalLayer(nn.Module):
             # padding 0 at the end.
             num_proposal = proposals_single.size(0)
             output[i, :, 0] = i
-            output[i, :num_proposal, 1:] = proposals_single
+            output[i, :, 1] = scores_single
+            output[i, :num_proposal, 2:] = proposals_single
 
         return output
 

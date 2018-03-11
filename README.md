@@ -1,13 +1,13 @@
 # maskrcnn-pytorch
 
-## (Currently, this project is in fast update state, will be available very soon.)
+## (Currently, this project is under fast update state, will be fully available very soon.)
 
 Mask R-CNN implementation in PyTorch
 
 ![maskrcnn-result](http://chuantu.biz/t6/250/1520606201x-1404795469.png)
 
 ## Usage
-(will be available very soon.)
+(Will be available very soon.)
 
 ```python
 from maskrcnn import MaskRCNN
@@ -24,22 +24,22 @@ def predict():
 
 #### 1. backbone: 
 
-Several backbones model support Mask R-CNN, like ResNet-101-FPN.
+Several backbone models support Mask R-CNN, like ResNet-101-FPN.
 
 #### 2. proposal:
 
-RoI(Regions of interest) Proposal, like RPN and variants.
+RoI(Region of Interest) Proposal, like RPN and variants.
 
 #### 3. pooling:
 
 Pooling for fixed dimensional representation, like RoIAlign and some variants.
 
 #### 4. head:
-Predict heads like classification head, Bounding box head, and mask head.
+Predict heads include classification head, bounding box head, mask head and their variants.
 
 #### 5. lib:
 
-Some third party code this project based on.
+Some third-party lib this project based on.
 
 
 ## Reference:
