@@ -30,14 +30,13 @@ class RPN(nn.Module):
                                              ratios=self.anchor_ratios)
                               for idx, scale in enumerate(self.anchor_scales)]
 
-    def forward(self, feature_maps, im_info, gt_boxes, num_boxes):
+    def forward(self, feature_maps, gt_bboxes=None, im_info=None):
         """
         
         Args:
             feature_maps: [p2, p3, p4, p5, p6]
+            gt_bboxes: 
             im_info: 
-            gt_boxes: 
-            num_boxes: 
         Returns:
              rois: NxMx5(idx, x1, y1, x2, y2)
                 N: batch size, M: number of roi after nms, idx: bbox index in mini-batch.
@@ -46,13 +45,15 @@ class RPN(nn.Module):
         """
         batch_size = feature_maps.size(0)
         nms_output_num = cfg.TEST.RPN_POST_NMS_TOP_N
+        if self.training:
+            nms_output_num = cfg.TRAIN.RPN_POST_NMS_TOP_N
         rois_pre_nms = []
         rpn_loss_cls = 0
         rpn_loss_bbox = 0
         for idx, feature in enumerate(feature_maps):
             self.rpn.RPN_anchor_target = self.RPN_anchor_targets[idx]
             self.rpn.RPN_proposal = self.RPN_proposals[idx]
-            rpn_single_result = self.rpn(feature, im_info, gt_boxes, num_boxes)
+            rpn_single_result = self.rpn(feature, im_info, gt_bboxes, None)
             roi_single, loss_cls_single, loss_bbox_single = rpn_single_result
             rpn_loss_cls += loss_cls_single
             rpn_loss_bbox += loss_bbox_single

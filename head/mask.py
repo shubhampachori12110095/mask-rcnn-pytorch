@@ -23,6 +23,14 @@ class MaskHead(nn.Module):
         self.relu = nn.ReLU(inplace=True)
 
     def forward(self, x):
+        """
+        
+        Args:
+            x: 
+
+        Returns:
+            x: NxMxCxHxW, C encode mask class id.
+        """
         x = self.conv1(padding=_calc_same_padding(x.size()))
         x = self.bn1(x)
         x = self.relu(x)

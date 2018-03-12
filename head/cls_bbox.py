@@ -12,7 +12,7 @@ class ClsBBoxHead_fc(nn.Module):
         self.relu = nn.ReLU(inplace=True)
         self.fc_cls = nn.Linear(1024, num_classes)
         self.fc_bbox = nn.Linear(1024, num_classes * 4)
-        self.softmax = nn.Softmax(dim=1)
+        self.log_softmax = nn.LogSoftmax()
 
     def forward(self, x):
         x = self.avg_pool(x)
@@ -22,8 +22,8 @@ class ClsBBoxHead_fc(nn.Module):
 
         fc_out_cls = self.fc_cls(x)
         fc_out_bbox = self.fc_bbox(x)
-        prob_cls = self.softmax(fc_out_cls)
-        prob_bbox = self.softmax(fc_out_bbox)
+        prob_cls = self.log_softmax(fc_out_cls)
+        prob_bbox = self.log_softmax(fc_out_bbox)
 
         return prob_cls, prob_bbox
 
